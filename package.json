@@ -1,7 +1,7 @@
 {
   "name": "github-pr-autolabel",
-  "version": "1.0.0",
-  "description": "",
+  "version": "0.1.0",
+  "description": "Set what labels to automatically add when opening a PR.",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -30,5 +30,8 @@
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.11",
     "yargs": "^15.3.1"
+  },
+  "dependencies": {
+    "delegated-events": "^1.1.2"
   }
 }

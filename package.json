@@ -5,14 +5,16 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "copy-manifest": "cpx manifest.json dist/",
-    "build": "webpack --production && npm run copy-manifest",
-    "dev": "webpack && npm run copy-manifest"
+    "clean": "rimraf dist/",
+    "copy-manifest": "cpx ./src/manifest.json dist/",
+    "build": "npm run clean && webpack --production --progress && npm run copy-manifest",
+    "dev": "npm run clean && webpack --progress && npm run copy-manifest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/chrome": "^0.0.112",
     "@typescript-eslint/eslint-plugin": "^2.34.0",
     "@typescript-eslint/parser": "^2.34.0",
     "cpx": "^1.5.0",
@@ -20,6 +22,7 @@
     "eslint": "^7.0.0",
     "node-sass": "^4.14.1",
     "prettier": "^2.0.5",
+    "rimraf": "^3.0.2",
     "sass-loader": "^8.0.2",
     "style-loader": "^1.2.1",
     "ts-loader": "^7.0.4",

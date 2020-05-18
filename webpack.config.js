@@ -3,7 +3,10 @@ const argv = require("yargs").argv;
 const isProduction = argv.production;
 
 module.exports = {
-  entry: "./src/index.ts",
+  entry: {
+    background: path.resolve(__dirname, "./src/background.ts"),
+    index: path.resolve(__dirname, "./src/index.ts"),
+  },
   mode: isProduction ? "production" : "development",
   module: {
     rules: [
@@ -20,7 +23,7 @@ module.exports = {
   devtool: !isProduction ? "inline-source-map" : false,
   watch: !isProduction,
   output: {
-    filename: "bundle.js",
+    filename: "[name].js",
     path: path.resolve(__dirname, "dist"),
   },
 };

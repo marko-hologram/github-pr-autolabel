@@ -1,0 +1,6 @@
+{
+  "name": "GitHub Autolabel",
+  "version": "1.0",
+  "description": "Automatically add a label to a PR before you open it.",
+  "manifest_version": 2
+}

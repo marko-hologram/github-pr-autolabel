@@ -2,9 +2,13 @@
   "name": "GitHub Autolabel",
   "version": "1.0",
   "description": "Automatically add a label to a PR before you open it.",
+  "permissions": ["storage"],
   "background": {
     "scripts": ["background.js"],
     "persistent": false
+  },
+  "page_action": {
+    "default_popup": "popup.html"
   },
   "manifest_version": 2
 }

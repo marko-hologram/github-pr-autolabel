@@ -22,13 +22,13 @@ export type TSingleEntry = {
 export const getStoredEntries = (): Promise<TSingleEntry[]> => {
   return new Promise((resolve) => {
     chrome.storage.sync.get(SAVED_ENTRIES_STORAGE_KEY, (itemsObject: { savedRepos: TSingleEntry[] }) => {
-      resolve(itemsObject.savedRepos);
+      resolve(itemsObject.savedRepos ? itemsObject.savedRepos : []);
     });
   });
 };
 
 export const storeSingleEntry = async (newEntry: TSingleEntry): Promise<void> => {
-  const currentItemsSaved = (await getStoredEntries()) || [];
+  const currentItemsSaved = await getStoredEntries();
   const newArrayOfEntries = [...currentItemsSaved, newEntry];
 
   chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: newArrayOfEntries });

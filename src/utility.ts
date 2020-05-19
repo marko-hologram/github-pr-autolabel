@@ -33,3 +33,47 @@ export const storeSingleEntry = async (newEntry: TSingleEntry): Promise<void> =>
 
   chrome.storage.sync.set({ [STORAGE_KEY]: newArrayOfEntries });
 };
+
+export const setPRLabels = async (entryURL: string): Promise<void> => {
+  const storedEntries = await getStoredEntries();
+  const labelsToSelect = storedEntries.find((singleEntry: TSingleEntry) => singleEntry.url === entryURL).labels;
+  const labelsToggle = document.getElementById("labels-select-menu");
+
+  if (!labelsToggle) {
+    return;
+  }
+
+  function openAndLoadToggle(): Promise<void> {
+    labelsToggle.setAttribute("open", "true");
+
+    return new Promise((resolve) => {
+      let intervalId: NodeJS.Timeout = null;
+
+      setTimeout(() => {
+        intervalId = setInterval(() => {
+          const isLoading = labelsToggle.classList.contains("is-loading");
+
+          if (!isLoading) {
+            clearInterval(intervalId);
+            resolve();
+          }
+        }, 100);
+      }, 200);
+    });
+  }
+
+  function closeToggle(): void {
+    labelsToggle.removeAttribute("open");
+  }
+
+  await openAndLoadToggle();
+  const allLabelElements = labelsToggle.querySelectorAll(".select-menu-item .name");
+
+  Array.from(allLabelElements)
+    .filter((singleElement) => labelsToSelect.includes(singleElement.textContent.toLowerCase()))
+    .forEach((labelElement) => {
+      (labelElement.closest(".select-menu-item") as HTMLElement).click();
+    });
+
+  closeToggle();
+};

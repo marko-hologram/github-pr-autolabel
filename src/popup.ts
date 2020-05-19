@@ -8,7 +8,7 @@ const updatePopupMessage = (popupMessage: string): void => {
   }
 };
 
-const checkIfEntiresExist = async (): Promise<void> => {
+const updateEntriesCountText = async (): Promise<void> => {
   const storedEntries = await getStoredEntries();
   const storedEntriesLength = storedEntries.length;
 
@@ -20,6 +20,6 @@ const checkIfEntiresExist = async (): Promise<void> => {
   updatePopupMessage(`You have ${storedEntriesLength} ${storedEntriesLength > 1 ? "entries" : "entry"} stored`);
 };
 
-chrome.storage.onChanged.addListener(checkIfEntiresExist);
+chrome.storage.onChanged.addListener(updateEntriesCountText);
 
-checkIfEntiresExist();
+updateEntriesCountText();

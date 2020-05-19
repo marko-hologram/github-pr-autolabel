@@ -1,22 +1,7 @@
-import { ACTIVE_DOMAIN } from "~/src/constants";
+import { ACTIVE_DOMAIN, MessageType } from "~/src/constants";
+import { TSingleEntry, getStoredEntries } from "~/src/utility";
 
-chrome.tabs.onUpdated.addListener(function (tabId, changeInfo, tab) {
-  console.log("changeInfo", changeInfo);
-  // read changeInfo data and do something with it
-  // like send the new url to contentscripts.js
-  if (changeInfo.url) {
-    chrome.runtime.sendMessage("", {
-      message: "hello sendMessage!",
-      url: changeInfo.url,
-    });
-    chrome.tabs.sendMessage(tabId, {
-      message: "hello!",
-      url: changeInfo.url,
-    });
-  }
-});
-
-chrome.runtime.onInstalled.addListener(function () {
+chrome.runtime.onInstalled.addListener(async function () {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
     chrome.declarativeContent.onPageChanged.addRules([
       {
@@ -31,4 +16,13 @@ chrome.runtime.onInstalled.addListener(function () {
   });
 });
 
-console.log("fjiesngbsi");
+chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
+  if (changeInfo.status === "complete") {
+    const storedEntries = await getStoredEntries();
+    const matchedEntry = storedEntries.find((singleEntry: TSingleEntry) => tab.url.includes(singleEntry.url.replace(/\/+$/, "") + "/compare/"));
+
+    if (matchedEntry) {
+      chrome.tabs.sendMessage(tabId, { type: MessageType.MATCHED_PR_PAGE_OPENED, entryData: matchedEntry });
+    }
+  }
+});

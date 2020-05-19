@@ -3,7 +3,7 @@ import "~/src/style/style.scss";
 import { on } from "delegated-events";
 
 import { isValidURL, TSingleEntry, getStoredEntries, storeSingleEntry } from "~/src/utility";
-import { STORAGE_KEY } from "~/src/constants";
+import { SAVED_ENTRIES_STORAGE_KEY, MessageType } from "~/src/constants";
 
 const showErrorMessage = (errorMessages: string[]): void => {
   const errorElement = document.getElementById("new-entry-form-error");
@@ -60,7 +60,7 @@ const updateActiveEntries = async (): Promise<void> => {
   const storedEntries = await getStoredEntries();
   let activeEntriesHTML = "";
 
-  if (storedEntries.length > 0) {
+  if (storedEntries && storedEntries.length > 0) {
     storedEntries.forEach((singleEntry: TSingleEntry, index: number) => {
       activeEntriesHTML += createSingleActiveEntry(singleEntry, index);
     });
@@ -88,7 +88,7 @@ const deleteSingleEntry = async (event: MouseEvent): Promise<void> => {
     const newEntries = [...storedEntries];
     newEntries.splice(entryIndex, 1);
 
-    chrome.storage.sync.set({ [STORAGE_KEY]: newEntries });
+    chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: newEntries });
   }
 };
 
@@ -123,8 +123,10 @@ newEntryForm?.addEventListener("submit", async (event) => {
   }
 
   const savedRepos = await getStoredEntries();
-  if (savedRepos.some((singleItem: TSingleEntry) => singleItem.url === urlFieldValue)) {
-    errorMessages.push("You already added this URL! Try to just edit it below if you only want to update labels for it.");
+  if (savedRepos && savedRepos.some((singleItem: TSingleEntry) => singleItem.url === urlFieldValue)) {
+    errorMessages.push(
+      "You already added this URL! If you want to update labels for this URL, you will have to delete it then add it back again. Sorry, no editing of existing entries for now!"
+    );
   }
 
   if (errorMessages.length > 0) {

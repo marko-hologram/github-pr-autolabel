@@ -1,16 +1,9 @@
-import { getStoredEntries } from "~/src/utility";
+import { MessageType } from "~/src/constants";
+import { setPRLabels, TSingleEntry } from "~/src/utility";
 
-let STORED_ENTRIES = [];
-
-getStoredEntries().then((items) => {
-  STORED_ENTRIES = items;
-});
-
-chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
-  console.log("request", request);
-  // listen for messages sent from background.js
-  console.log(request.url);
-  // if (request.message === "hello!") {
-  //   // new url is now in content scripts!
-  // }
+chrome.runtime.onMessage.addListener(function (request) {
+  if (request && request.type === MessageType.MATCHED_PR_PAGE_OPENED) {
+    const entryData: TSingleEntry = request.entryData;
+    setPRLabels(entryData.labels);
+  }
 });

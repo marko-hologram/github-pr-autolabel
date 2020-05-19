@@ -1,4 +1,4 @@
-import { STORAGE_KEY } from "~/src/constants";
+import { SAVED_ENTRIES_STORAGE_KEY } from "~/src/constants";
 
 export const isValidURL = (urlString: string): boolean => {
   const pattern = new RegExp(
@@ -21,22 +21,20 @@ export type TSingleEntry = {
 
 export const getStoredEntries = (): Promise<TSingleEntry[]> => {
   return new Promise((resolve) => {
-    chrome.storage.sync.get(STORAGE_KEY, (itemsObject: { savedRepos: TSingleEntry[] }) => {
+    chrome.storage.sync.get(SAVED_ENTRIES_STORAGE_KEY, (itemsObject: { savedRepos: TSingleEntry[] }) => {
       resolve(itemsObject.savedRepos);
     });
   });
 };
 
 export const storeSingleEntry = async (newEntry: TSingleEntry): Promise<void> => {
-  const currentItemsSaved = await getStoredEntries();
+  const currentItemsSaved = (await getStoredEntries()) || [];
   const newArrayOfEntries = [...currentItemsSaved, newEntry];
 
-  chrome.storage.sync.set({ [STORAGE_KEY]: newArrayOfEntries });
+  chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: newArrayOfEntries });
 };
 
-export const setPRLabels = async (entryURL: string): Promise<void> => {
-  const storedEntries = await getStoredEntries();
-  const labelsToSelect = storedEntries.find((singleEntry: TSingleEntry) => singleEntry.url === entryURL).labels;
+export const setPRLabels = async (labelsToSelect: string[]): Promise<void> => {
   const labelsToggle = document.getElementById("labels-select-menu");
 
   if (!labelsToggle) {

@@ -1,5 +1,5 @@
 import { ACTIVE_DOMAIN, MessageType } from "~/src/constants";
-import { TSingleEntry, getStoredEntries } from "~/src/utility";
+import { TSingleEntry, getStoredEntries, initUserSettings } from "~/src/utility";
 
 chrome.runtime.onInstalled.addListener(async function () {
   chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
@@ -25,4 +25,8 @@ chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
       chrome.tabs.sendMessage(tabId, { type: MessageType.MATCHED_PR_PAGE_OPENED, entryData: matchedEntry });
     }
   }
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  initUserSettings();
 });

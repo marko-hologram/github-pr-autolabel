@@ -32,6 +32,7 @@
     "yargs": "^15.3.1"
   },
   "dependencies": {
-    "delegated-events": "^1.1.2"
+    "delegated-events": "^1.1.2",
+    "toastify-js": "^1.8.0"
   }
 }

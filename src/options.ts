@@ -1,9 +1,11 @@
+import "toastify-js/src/toastify.css";
 import "~/src/style/style.scss";
 
 import { on } from "delegated-events";
 
-import { isValidURL, TSingleEntry, getStoredEntries, storeSingleEntry } from "~/src/utility";
-import { SAVED_ENTRIES_STORAGE_KEY, MessageType } from "~/src/constants";
+import { isValidURL, TSingleEntry, getStoredEntries, storeSingleEntry, getStoredUserSettings, updateUserSetting } from "~/src/utility";
+import { SAVED_ENTRIES_STORAGE_KEY, IUserSettings } from "~/src/constants";
+import { showToast } from "~/src/toasts";
 
 const showErrorMessage = (errorMessages: string[]): void => {
   const errorElement = document.getElementById("new-entry-form-error");
@@ -11,7 +13,7 @@ const showErrorMessage = (errorMessages: string[]): void => {
   if (errorElement) {
     errorElement.innerHTML = errorMessages
       .map((singleMessage, index) => {
-        return `${index > 0 ? "<br />" : ""}${singleMessage}`;
+        return `${index > 0 ? "<br /><br />" : ""}${singleMessage}`;
       })
       .join("")
       .toString();
@@ -113,9 +115,14 @@ newEntryForm?.addEventListener("submit", async (event) => {
   const submitButton = document.getElementById("new-entry-submit") as HTMLButtonElement;
 
   const errorMessages: string[] = [];
+  const urlIsValid = isValidURL(urlFieldValue);
 
-  if (urlFieldValue.length > 0 && !isValidURL(urlFieldValue)) {
+  if (urlFieldValue.length > 0 && !urlIsValid) {
     errorMessages.push("Oh come on, that is not a valid URL...You know it's not.");
+  }
+
+  if (urlFieldValue.length > 0 && urlIsValid && !urlFieldValue.includes("github.com")) {
+    errorMessages.push("Well, the URL is a valid URL, but it's not a 'github.com' URL. Please provide a valid GitHub URL.");
   }
 
   if (urlFieldValue.length === 0 || labelsFieldValue.length === 0) {
@@ -146,4 +153,35 @@ newEntryForm?.addEventListener("submit", async (event) => {
   submitButton.disabled = false;
 });
 
+const setUserOptions = async (): Promise<void> => {
+  const storedUserSettings = await getStoredUserSettings();
+
+  if (storedUserSettings.showLabelsAddSuccessMessage) {
+    (document.getElementById("showLabelsAddSuccessMessage") as HTMLInputElement).checked = true;
+  }
+};
+
 updateActiveEntries();
+setUserOptions();
+
+const toggleUserOption = async (event: any): Promise<void> => {
+  const target: HTMLInputElement = event.target;
+  const optionName: keyof IUserSettings = target.name as any;
+  const isChecked = target.checked;
+  target.setAttribute("disabled", "true");
+
+  const didUpdate = await updateUserSetting({
+    settingKey: optionName,
+    settingValue: isChecked,
+  });
+
+  target.removeAttribute("disabled");
+  if (didUpdate) {
+    showToast.success("Successfully updated user settings!");
+  } else {
+    showToast.error("Error while updating user settings.");
+    setUserOptions();
+  }
+};
+
+on("change", ".user-option-toggle", toggleUserOption);

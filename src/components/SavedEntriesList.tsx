@@ -26,8 +26,7 @@ const SavedEntriesListSingle: React.FunctionComponent<SavedEntriesListSingleProp
       </td>
       <td className="table-cell">{entryData.labels.join(", ").toString()}</td>
       <td className="table-cell">
-        <Button onClick={toggleEditMode}>Edit {editModeOn ? "On" : "Off"}</Button>
-        <Button variant="danger">Delete Entry</Button>
+        <Button onClick={toggleEditMode}>Edit {editModeOn ? "On" : "Off"}</Button> <Button variant="danger">Delete Entry</Button>
       </td>
     </tr>
   );

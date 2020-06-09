@@ -59,8 +59,10 @@
   },
   "dependencies": {
     "@types/classnames": "^2.2.10",
+    "bootstrap": "^4.5.0",
     "classnames": "^2.2.6",
     "delegated-events": "^1.1.2",
+    "normalize.css": "^8.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "toastify-js": "^1.8.0"

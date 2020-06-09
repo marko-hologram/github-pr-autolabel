@@ -18,17 +18,16 @@ const SavedEntriesListSingle: React.FunctionComponent<SavedEntriesListSingleProp
   };
 
   return (
-    <tr className="table__row">
-      <td className="table__cell">{entryData.url}</td>
-      <td className="table__cell">{entryData.labels.join(", ").toString()}</td>
-      <td className="table__cell">
-        <Button variant="secondary" href={entryData.url} target="_blank" rel="noreferrer">
-          Open GitHub Repo
-        </Button>{" "}
+    <tr className="table-row">
+      <td className="table-cell">
+        <a href={entryData.url} target="_blank" rel="noreferrer">
+          {entryData.url}
+        </a>
+      </td>
+      <td className="table-cell">{entryData.labels.join(", ").toString()}</td>
+      <td className="table-cell">
         <Button onClick={toggleEditMode}>Edit {editModeOn ? "On" : "Off"}</Button>
-        <Button variant="danger" className="btn btn--danger single-entry__delete">
-          Delete Entry
-        </Button>
+        <Button variant="danger">Delete Entry</Button>
       </td>
     </tr>
   );
@@ -40,11 +39,13 @@ const SavedEntriesList: React.FunctionComponent<SavedEntriesListProps> = ({ save
   }
 
   return (
-    <table className="table table--bordered">
-      <thead className="table__header">
-        <th>URL</th>
-        <th>Tags</th>
-        <th>Actions</th>
+    <table className="table table-striped table-bordered">
+      <thead className="thead-dark">
+        <tr>
+          <th>URL</th>
+          <th>Tags</th>
+          <th>Actions</th>
+        </tr>
       </thead>
       <tbody className="table__body">
         {savedEntries.map((singleEntry: TSingleEntry) => {

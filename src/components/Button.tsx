@@ -9,12 +9,12 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const Button: React.FunctionComponent<ButtonProps> = ({ children, variant = "primary", href, ...otherProps }) => {
-  const classesString = classnames("btn", `btn--${variant}`);
+  const classesString = classnames("btn", `btn-${variant}`);
 
   const WrapperTag: any = href ? "a" : "button";
 
   return (
-    <WrapperTag className={classesString} {...otherProps}>
+    <WrapperTag className={classesString} href={href} {...otherProps}>
       {children}
     </WrapperTag>
   );

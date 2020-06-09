@@ -1,37 +1,7 @@
 <!DOCTYPE html>
 <html>
   <body>
-    <div class="options-main">
-      <h1 class="options-title">GitHub PR Autolabel Settings</h1>
-      <div class="options-settings">
-        <div class="options-settings__user-settings">
-          <h2>Settings</h2>
-          <input type="checkbox" id="showLabelsAddSuccessMessage" class="user-option-toggle" name="showLabelsAddSuccessMessage">
-          <label for="showLabelsAddSuccessMessage">Show Notification When Labels Are Successfully Added</label>
-        </div>
-        <div class="options-settings__add">
-          <h2>Add New Entry</h2>
-          <p>You have to refresh your GitHub tabs after adding entries here!</p>
-          <form id="new-entry-form">
-            <div class="form-group">
-              <label for="repo-url">Repo URL</label>
-              <input id="repo-url" class="form-control" name="repoUrl" placeholder="https://github.com/microsoft/vscode">
-            </div>
-            <div class="form-group">
-              <label for="pr-labels">Labels (comma separated)</label>
-              <input id="pr-labels" class="form-control" name="labels" placeholder="bug,help wanted">
-            </div>
-            <button class="btn btn--primary" type="submit" id="new-entry-submit">Save Entry</button>
-          </form>
-          <p id="new-entry-form-error" class="alert alert--danger u-hide"></p>
-          <p id="new-entry-form-success" class="alert alert--success u-hide"></p>
-        </div>
-        <div class="options-settings__current">
-          <h2>Saved Entries</h2>
-          <div class="options-settings__current-list" id="current-entries-list"></div>
-        </div>
-      </div>
-    </div>
+    <div id="options-page"></div>
   </body>
   <script src="options.js"></script>
 </html>

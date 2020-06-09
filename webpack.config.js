@@ -12,15 +12,15 @@ const DIST_PATH = absPath("dist/");
 module.exports = {
   entry: {
     background: path.resolve(__dirname, "./src/background.ts"),
-    index: path.resolve(__dirname, "./src/index.ts"),
-    options: path.resolve(__dirname, "./src/options.ts"),
+    popup: path.resolve(__dirname, "./src/popup.tsx"),
+    options: path.resolve(__dirname, "./src/options.tsx"),
     contentScript: path.resolve(__dirname, "./src/contentScript.ts"),
   },
   mode: isProduction ? "production" : "development",
   module: {
     rules: [
       {
-        test: /\.tsx?$/,
+        test: /\.ts(x?)$/,
         use: "ts-loader",
         exclude: /node_modules/,
       },
@@ -47,7 +47,7 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: [".ts", ".js"],
+    extensions: [".ts", ".tsx", ".js", ".jsx"],
     alias: {
       "~": absPath(),
     },

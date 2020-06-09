@@ -74,7 +74,7 @@ export const initUserSettings = async (): Promise<void> => {
 export const setPRLabels = async (labelsToSelect: string[]): Promise<boolean> => {
   const labelsToggle = document.getElementById("labels-select-menu");
 
-  if (!labelsToggle) {
+  if (labelsToggle == null) {
     return false;
   }
 

@@ -5,7 +5,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { on } from "delegated-events";
 
-import { isValidURL, TSingleEntry, getStoredEntries, storeSingleEntry, getStoredUserSettings, updateUserSetting } from "~/src/utility";
+import { TSingleEntry, getStoredEntries, storeSingleEntry, getStoredUserSettings, updateUserSetting } from "~/src/utility";
 import { SAVED_ENTRIES_STORAGE_KEY, IUserSettings } from "~/src/constants";
 import { showToast } from "~/src/toasts";
 import OptionsPage from "~/src/pages/OptionsPage";

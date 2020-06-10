@@ -5,3 +5,11 @@
 .t-700 {
   font-weight: 700;
 }
+
+$spacing-multiplier-values-numbered: (0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 16) !default;
+
+@each $spacing-multiplier in $spacing-multiplier-values-numbered {
+  @include make-padding-spacing-utilities($spacing-multiplier, $spacing-multiplier);
+
+  @include make-margin-spacing-utilities($spacing-multiplier, $spacing-multiplier);
+}

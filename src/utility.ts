@@ -1,20 +1,6 @@
 import { SAVED_ENTRIES_STORAGE_KEY, SAVED_SETTINGS_STORAGE_KEY, IUserSettings } from "~/src/constants";
 import { showToast } from "~/src/toasts";
 
-export const isValidURL = (urlString: string): boolean => {
-  const pattern = new RegExp(
-    "^(https?:\\/\\/)?" + // protocol
-    "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-    "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-    "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-    "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-      "(\\#[-a-z\\d_]*)?$",
-    "i"
-  ); // fragment locator
-
-  return !!pattern.test(urlString);
-};
-
 export type TSingleEntry = {
   url: string;
   labels: string[];
@@ -78,15 +64,15 @@ export const setPRLabels = async (labelsToSelect: string[]): Promise<boolean> =>
     return false;
   }
 
-  function openAndLoadToggle(): Promise<void> {
+  const openAndLoadToggle = (): Promise<void> => {
     labelsToggle.setAttribute("open", "true");
 
     return new Promise((resolve, reject) => {
-      let intervalId: NodeJS.Timeout = null;
+      let intervalId: number = null;
       let attempts = 0;
 
-      setTimeout(() => {
-        intervalId = setInterval(() => {
+      window.setTimeout(() => {
+        intervalId = window.setInterval(() => {
           const isLoading = labelsToggle.classList.contains("is-loading");
           attempts++;
 
@@ -95,17 +81,17 @@ export const setPRLabels = async (labelsToSelect: string[]): Promise<boolean> =>
             resolve();
           }
 
-          if (attempts > 5) {
+          if (attempts > 20) {
             reject("Failed to add desired label(s).");
           }
         }, 100);
       }, 200);
     });
-  }
+  };
 
-  function closeToggle(): void {
+  const closeToggle = (): void => {
     labelsToggle.removeAttribute("open");
-  }
+  };
 
   try {
     await openAndLoadToggle();

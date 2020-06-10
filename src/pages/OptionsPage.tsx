@@ -1,6 +1,12 @@
-import React from "react";
+import React, { useState } from "react";
 import SavedEntriesList from "~/src/components/SavedEntriesList";
 import useStoredEntries from "~/src/utility/hooks/useStoredEntries";
+import Button from "~/src/components/Button";
+import FormGroup from "~/src/components/FormGroup";
+import Input from "~/src/components/Input";
+import { isValidURL } from "~/src/utility/hooks/validation";
+import { useFormInput } from "~/src/utility/hooks/useFormInput";
+import Alert from "~/src/components/Alert";
 
 // const showErrorMessage = (errorMessages: string[]): void => {
 //   const errorElement = document.getElementById("new-entry-form-error");
@@ -179,8 +185,46 @@ import useStoredEntries from "~/src/utility/hooks/useStoredEntries";
 //   }
 // };
 
+// if (urlFieldValue.length > 0 && !urlIsValid) {
+//     errorMessages.push("Oh come on, that is not a valid URL...You know it's not.");
+//   }
+
+//   if (urlFieldValue.length > 0 && urlIsValid && !urlFieldValue.includes("github.com")) {
+//     errorMessages.push("Well, the URL is a valid URL, but it's not a 'github.com' URL. Please provide a valid GitHub URL.");
+//   }
+
+//   if (urlFieldValue.length === 0 || labelsFieldValue.length === 0) {
+//     errorMessages.push("All fields are required!");
+//   }
+
+//   const savedRepos = await getStoredEntries();
+//   if (savedRepos && savedRepos.some((singleItem: TSingleEntry) => singleItem.url === urlFieldValue)) {
+//     errorMessages.push(
+//       "You already added this URL! If you want to update labels for this URL, you will have to delete it then add it back again. Sorry, no editing of existing entries for now!"
+//     );
+//   }
+
 const OptionsPage: React.FunctionComponent<Record<string, unknown>> = () => {
   const storedEntries = useStoredEntries();
+  const urlInput = useFormInput();
+  const labelsInput = useFormInput();
+  // const [url, setUrl] = useState("");
+  // const [labels, setLabels] = useState("");
+  const [errorMessages, setErrorMessages] = useState([]);
+  const [entryAdded, setEntryAdded] = useState(false);
+
+  const handleEntrySubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const errorMessagesArray = [];
+
+    const urlIsValid = isValidURL(urlInput.value);
+
+    errorMessagesArray.push("Oh come on, that is not a valid URL...You know it's not.");
+    errorMessagesArray.push("Well, the URL is a valid URL, but it's not a 'github.com' URL. Please provide a valid GitHub URL.");
+    errorMessagesArray.push("All fields are required!");
+
+    setErrorMessages(errorMessagesArray);
+  };
 
   return (
     <div className="options-main">
@@ -188,27 +232,35 @@ const OptionsPage: React.FunctionComponent<Record<string, unknown>> = () => {
       <div className="options-settings">
         <div className="options-settings__user-settings">
           <h2>Settings</h2>
-          <input type="checkbox" id="showLabelsAddSuccessMessage" className="user-option-toggle" name="showLabelsAddSuccessMessage" />
-          <label htmlFor="showLabelsAddSuccessMessage">Show Notification When Labels Are Successfully Added</label>
+          <div className="form-group form-check">
+            <input type="checkbox" id="showLabelsAddSuccessMessage" className="form-check-input user-option-toggle" name="showLabelsAddSuccessMessage" />
+            <label htmlFor="showLabelsAddSuccessMessage" className="form-check-label">
+              Show Notification When Labels Are Successfully Added
+            </label>
+          </div>
         </div>
         <div className="options-settings__add">
           <h2>Add New Entry</h2>
           <p>You have to refresh your GitHub tabs after adding entries here!</p>
-          <form id="new-entry-form">
-            <div className="form-group">
-              <label htmlFor="repo-url">Repo URL</label>
-              <input id="repo-url" className="form-control" name="repoUrl" placeholder="https://github.com/microsoft/vscode" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="pr-labels">Labels (comma separated)</label>
-              <input id="pr-labels" className="form-control" name="labels" placeholder="bug,help wanted" />
-            </div>
-            <button className="btn btn--primary" type="submit" id="new-entry-submit">
-              Save Entry
-            </button>
+          <form className="m-b-2" onSubmit={handleEntrySubmit}>
+            <FormGroup>
+              <Input labelText="Repo URL" name="repoUrl" placeholder="https://github.com/marko-hologram/github-pr-autolabel" {...urlInput} />
+            </FormGroup>
+            <FormGroup>
+              <Input labelText="Labels (comma separated)" name="label" placeholder="bug,help wanted" {...labelsInput} />
+            </FormGroup>
+            <Button type="submit">Save Entry</Button>
+            {urlInput.value}
           </form>
-          <p id="new-entry-form-error" className="alert alert--danger u-hide"></p>
-          <p id="new-entry-form-success" className="alert alert--success u-hide"></p>
+          {errorMessages.length > 0 &&
+            errorMessages.map((singleMessage: string) => {
+              return (
+                <Alert key={singleMessage} variant="danger">
+                  {singleMessage}
+                </Alert>
+              );
+            })}
+          {entryAdded && <Alert variant="success">Entry successfully added!</Alert>}
         </div>
         <div className="options-settings__current">
           <h2>Saved Entries</h2>

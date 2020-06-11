@@ -2,7 +2,7 @@ import { useState } from "react";
 
 type useFormInputReturn = { value: string; onChange: (event: React.ChangeEvent<HTMLInputElement>) => void };
 
-export const useFormInput = (initialValue = ""): useFormInputReturn => {
+const useFormInput = (initialValue = ""): useFormInputReturn => {
   const [value, setValue] = useState(initialValue);
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     let inputValue = event.target.value;
@@ -13,5 +13,8 @@ export const useFormInput = (initialValue = ""): useFormInputReturn => {
 
     setValue(inputValue);
   };
+
   return { value, onChange: handleChange };
 };
+
+export default useFormInput;

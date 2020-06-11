@@ -1,11 +1,13 @@
 import React, { useState } from "react";
-import SavedEntriesList from "~/src/components/SavedEntriesList";
+import { v4 } from "uuid";
+import { isValidURL } from "~/src/utility/hooks/validation";
+import { storeSingleEntry } from "~/src/utility";
+import useFormInput from "~/src/utility/hooks/useFormInput";
 import useStoredEntries from "~/src/utility/hooks/useStoredEntries";
+import SavedEntriesList from "~/src/components/SavedEntriesList";
 import Button from "~/src/components/Button";
 import FormGroup from "~/src/components/FormGroup";
 import Input from "~/src/components/Input";
-import { isValidURL } from "~/src/utility/hooks/validation";
-import { useFormInput } from "~/src/utility/hooks/useFormInput";
 import Alert from "~/src/components/Alert";
 
 // const showErrorMessage = (errorMessages: string[]): void => {
@@ -215,58 +217,61 @@ const OptionsPage: React.FunctionComponent<Record<string, unknown>> = () => {
 
   const handleEntrySubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const errorMessagesArray = [];
+    // const errorMessagesArray = [];
 
-    const urlIsValid = isValidURL(urlInput.value);
+    // const urlIsValid = isValidURL(urlInput.value);
 
-    errorMessagesArray.push("Oh come on, that is not a valid URL...You know it's not.");
-    errorMessagesArray.push("Well, the URL is a valid URL, but it's not a 'github.com' URL. Please provide a valid GitHub URL.");
-    errorMessagesArray.push("All fields are required!");
+    // errorMessagesArray.push("Oh come on, that is not a valid URL...You know it's not.");
+    // errorMessagesArray.push("Well, the URL is a valid URL, but it's not a 'github.com' URL. Please provide a valid GitHub URL.");
+    // errorMessagesArray.push("All fields are required!");
 
-    setErrorMessages(errorMessagesArray);
+    // setErrorMessages(errorMessagesArray);
+    storeSingleEntry({ newEntry: { url: v4(), labels: ["test", "what"] } });
   };
 
   return (
-    <div className="options-main">
-      <h1 className="options-title">GitHub PR Autolabel Settings</h1>
-      <div className="options-settings">
-        <div className="options-settings__user-settings">
-          <h2>Settings</h2>
-          <div className="form-group form-check">
-            <input type="checkbox" id="showLabelsAddSuccessMessage" className="form-check-input user-option-toggle" name="showLabelsAddSuccessMessage" />
-            <label htmlFor="showLabelsAddSuccessMessage" className="form-check-label">
-              Show Notification When Labels Are Successfully Added
-            </label>
+    <div className="options">
+      <div className="options__main">
+        <h1>GitHub PR Autolabel Settings</h1>
+        <div className="options__settings">
+          <div className="options__settings-user">
+            <h2>Settings</h2>
+            <div className="form-group form-check">
+              <input type="checkbox" id="showLabelsAddSuccessMessage" className="form-check-input user-option-toggle" name="showLabelsAddSuccessMessage" />
+              <label htmlFor="showLabelsAddSuccessMessage" className="form-check-label">
+                Show Notification When Labels Are Successfully Added
+              </label>
+            </div>
+          </div>
+          <div className="options__add">
+            <h2>Add New Entry</h2>
+            <p>You have to refresh your GitHub tabs after adding entries here!</p>
+            <form className="m-b-2" onSubmit={handleEntrySubmit}>
+              <FormGroup>
+                <Input labelText="Repo URL" name="repoUrl" placeholder="https://github.com/marko-hologram/github-pr-autolabel" {...urlInput} />
+              </FormGroup>
+              <FormGroup>
+                <Input labelText="Labels (comma separated)" name="label" placeholder="bug,help wanted" {...labelsInput} />
+              </FormGroup>
+              <Button type="submit">Save Entry</Button>
+              {urlInput.value}
+            </form>
+            {errorMessages.length > 0 &&
+              errorMessages.map((singleMessage: string) => {
+                return (
+                  <Alert key={singleMessage} variant="danger">
+                    {singleMessage}
+                  </Alert>
+                );
+              })}
+            {entryAdded && <Alert variant="success">Entry successfully added!</Alert>}
           </div>
         </div>
-        <div className="options-settings__add">
-          <h2>Add New Entry</h2>
-          <p>You have to refresh your GitHub tabs after adding entries here!</p>
-          <form className="m-b-2" onSubmit={handleEntrySubmit}>
-            <FormGroup>
-              <Input labelText="Repo URL" name="repoUrl" placeholder="https://github.com/marko-hologram/github-pr-autolabel" {...urlInput} />
-            </FormGroup>
-            <FormGroup>
-              <Input labelText="Labels (comma separated)" name="label" placeholder="bug,help wanted" {...labelsInput} />
-            </FormGroup>
-            <Button type="submit">Save Entry</Button>
-            {urlInput.value}
-          </form>
-          {errorMessages.length > 0 &&
-            errorMessages.map((singleMessage: string) => {
-              return (
-                <Alert key={singleMessage} variant="danger">
-                  {singleMessage}
-                </Alert>
-              );
-            })}
-          {entryAdded && <Alert variant="success">Entry successfully added!</Alert>}
-        </div>
-        <div className="options-settings__current">
-          <h2>Saved Entries</h2>
-          <div className="options-settings__current-list">
-            <SavedEntriesList savedEntries={storedEntries} />
-          </div>
+      </div>
+      <div className="options__sidebar">
+        <h2>Saved Entries</h2>
+        <div className="options_entries-list">
+          <SavedEntriesList savedEntries={storedEntries} />
         </div>
       </div>
     </div>

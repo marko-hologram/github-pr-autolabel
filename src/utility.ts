@@ -14,11 +14,23 @@ export const getStoredEntries = (): Promise<TSingleEntry[]> => {
   });
 };
 
-export const storeSingleEntry = async (newEntry: TSingleEntry): Promise<void> => {
+export const storeSingleEntry = async ({ newEntry }: { newEntry: TSingleEntry }): Promise<void> => {
   const currentItemsSaved = await getStoredEntries();
   const newArrayOfEntries = [...currentItemsSaved, newEntry];
 
   chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: newArrayOfEntries });
+};
+
+export const updateStoredEntries = ({ updatedEntries }: { updatedEntries: TSingleEntry[] }): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: updatedEntries }, () => {
+      if (chrome.runtime.lastError) {
+        reject(false);
+      }
+
+      resolve(true);
+    });
+  });
 };
 
 export const getEmphasizedLabels = (labels: string[]): string => {

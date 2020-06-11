@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  labelText: string;
+  labelText?: string;
 }
 
 const Input: React.FunctionComponent<InputProps> = ({ labelText, ...otherProps }) => {

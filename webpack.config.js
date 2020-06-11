@@ -62,8 +62,7 @@ module.exports = {
     new CopyPlugin({
       patterns: [
         { from: absPath("./src/manifest.json"), to: DIST_PATH },
-        { from: absPath("./src/frontend-ui"), to: DIST_PATH },
-        { from: absPath("./src/background-ui"), to: DIST_PATH },
+        { from: absPath("./src/html"), to: DIST_PATH },
         { from: absPath("./src/assets/icon"), to: DIST_PATH + "/assets/icon" },
       ],
     }),

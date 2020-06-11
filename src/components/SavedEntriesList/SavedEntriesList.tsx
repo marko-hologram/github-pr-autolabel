@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { TSingleEntry, getStoredEntries, updateStoredEntries } from "~/src/utility";
-import Button from "~/src/components/Button";
-import Input from "~/src/components/Input";
+import Button from "~/src/components/Button/Button";
+import Input from "~/src/components/Form/Input";
 import useFormInput from "~/src/utility/hooks/useFormInput";
 
 interface SavedEntriesListSingleProps {

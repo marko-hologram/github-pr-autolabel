@@ -4,11 +4,10 @@ import { isValidURL } from "~/src/utility/hooks/validation";
 import { storeSingleEntry } from "~/src/utility";
 import useFormInput from "~/src/utility/hooks/useFormInput";
 import useStoredEntries from "~/src/utility/hooks/useStoredEntries";
-import SavedEntriesList from "~/src/components/SavedEntriesList/SavedEntriesList";
-import Button from "~/src/components/Button/Button";
-import FormGroup from "~/src/components/Form/FormGroup";
-import Input from "~/src/components/Form/Input";
-import Alert from "~/src/components/Alert/Alert";
+import { Button } from "~/src/components/Button";
+import { FormGroup, Input } from "~/src/components/Form";
+import { Alert } from "~/src/components/Alert";
+import { SavedEntriesList } from "~/src/components/SavedEntriesList";
 
 // const showErrorMessage = (errorMessages: string[]): void => {
 //   const errorElement = document.getElementById("new-entry-form-error");

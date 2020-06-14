@@ -1,7 +1,7 @@
 import React, { useState, ReactElement, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { isValidURL, isGitHubURL } from "~/src/utility/validation";
-import { storeSingleEntry, getStoredEntries, getStoredUserSettings, updateUserSetting } from "~/src/utility";
+import { storeSingleEntry, getStoredEntries, getStoredUserSettings, updateUserSetting, getLabelsFromInput } from "~/src/utility";
 import { Button } from "~/src/components/Button";
 import { FormGroup, Input, Checkbox } from "~/src/components/Form";
 import { Alert } from "~/src/components/Alert";
@@ -69,9 +69,7 @@ const OptionsPage = (): ReactElement => {
 
     const savedRepos = await getStoredEntries();
     if (savedRepos && savedRepos.some((singleItem) => singleItem.url.toLowerCase() === urlInputLowercase)) {
-      errorMessagesArray.push(
-        "You already added this URL! If you want to update labels for this URL, you will have to delete it then add it back again. Sorry, no editing of existing entries for now!"
-      );
+      errorMessagesArray.push("You already added this URL! If you want to update labels for this URL, you can edit them in Saved Entries below!");
     }
 
     if (errorMessagesArray.length > 0) {
@@ -79,10 +77,7 @@ const OptionsPage = (): ReactElement => {
       return;
     }
 
-    const labelsArray = labelsInput.value
-      .split(",")
-      .map((singleLabel: string) => singleLabel.trim())
-      .filter(Boolean);
+    const labelsArray = getLabelsFromInput({ inputValue: labelsInput.value });
     storeSingleEntry({ url: urlInput.value, labels: labelsArray })
       .then(() => {
         setEntryAdded(true);
@@ -119,7 +114,7 @@ const OptionsPage = (): ReactElement => {
   return (
     <div className="options">
       <div className="options__main m-b-5">
-        <h1>GitHub PR Autolabel Settings</h1>
+        <h1>GitHub PR Autolabel Options</h1>
         <div className="options__settings">
           <div className="options__settings-user m-b-5">
             <h2>Settings</h2>
@@ -160,6 +155,7 @@ const OptionsPage = (): ReactElement => {
       </div>
       <div className="options__sidebar">
         <h2>Saved Entries</h2>
+        <Alert animationType={null}>You have to refresh your open GitHub tabs after editing entries here.</Alert>
         <div className="options_entries-list">
           <SavedEntriesList savedEntries={storedEntries} />
         </div>

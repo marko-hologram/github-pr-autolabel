@@ -2,4 +2,20 @@
   &__url {
     word-break: break-all;
   }
+
+  &__item {
+    overflow: hidden;
+    display: grid;
+    gap: 15px;
+    grid-template-columns: 1fr 1fr minmax(180px, 1fr);
+    box-shadow: 0 0 10px rgba(20, 20, 20, 0.1);
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+    transition: 0.2s box-shadow;
+
+    &:hover {
+      box-shadow: 0 0 20px rgba(20, 20, 20, 0.2);
+    }
+  }
 }

@@ -41,7 +41,30 @@ export const updateStoredEntries = ({ updatedEntries }: { updatedEntries: TSingl
   });
 };
 
-export const getLabelsListHTML = (labels: string[]): string => {
+export const updateSingleStoredEntry = async ({ updatedEntryData }: { updatedEntryData: TSingleEntry }): Promise<void> => {
+  const storedEntries = await getStoredEntries();
+  const matchedEntryIndex = storedEntries.findIndex((singleEntry) => singleEntry.url.toLowerCase() === updatedEntryData.url.toLowerCase());
+  storedEntries[matchedEntryIndex].labels = updatedEntryData.labels;
+
+  try {
+    await updateStoredEntries({ updatedEntries: storedEntries });
+  } catch (error) {
+    throw new Error(`There was an error while trying to update entry with ${updatedEntryData.url} URL.`);
+  }
+};
+
+export const deleteStoredEntry = async ({ entryToDelete }: { entryToDelete: TSingleEntry }): Promise<void> => {
+  try {
+    const storedEntries = await getStoredEntries();
+    const newEntries = storedEntries.filter((singleEntry) => singleEntry.url !== entryToDelete.url);
+
+    await updateStoredEntries({ updatedEntries: newEntries });
+  } catch (error) {
+    throw new Error("There was an error while deleting entry from storage.");
+  }
+};
+
+export const getLabelsListHTML = ({ labels }: { labels: string[] }): string => {
   let labelsListHTML = "<ol>";
   labelsListHTML += labels.reduce((html, text) => {
     return html + `<li>${text}</li>`;
@@ -49,6 +72,13 @@ export const getLabelsListHTML = (labels: string[]): string => {
 
   labelsListHTML += "</ol>";
   return labelsListHTML;
+};
+
+export const getLabelsFromInput = ({ inputValue }: { inputValue: string }): string[] => {
+  return inputValue
+    .split(",")
+    .map((singleLabel: string) => singleLabel.trim())
+    .filter(Boolean);
 };
 
 export const getStoredUserSettings = (): Promise<IUserSettings> => {
@@ -142,7 +172,7 @@ export const setPRLabels = async (labelsToSelect: string[]): Promise<boolean> =>
     if (labelsSet.length === 0) {
       showToast.error(
         `No labels were set on this pull request because all labels you defined don't exist in this repository. <br /> Labels you were trying to add:${getLabelsListHTML(
-          labelsToSelect
+          { labels: labelsToSelect }
         )}`
       );
       return;
@@ -151,14 +181,16 @@ export const setPRLabels = async (labelsToSelect: string[]): Promise<boolean> =>
     if (labelsSet.length !== labelsToSelect.length) {
       const labelsNotSet = labelsToSelect.filter((singleLabel: string) => !labelsSet.includes(singleLabel));
       showToast.error(
-        `Some labels were not set on this pull request because they do not exist in this repository. <br /> Labels not set: ${getLabelsListHTML(labelsNotSet)}`
+        `Some labels were not set on this pull request because they do not exist in this repository. <br /> Labels not set: ${getLabelsListHTML({
+          labels: labelsNotSet,
+        })}`
       );
     }
 
     const storedUserSettings = await getStoredUserSettings();
 
     if (storedUserSettings.showLabelsAddSuccessMessage) {
-      showToast.success(`These labels were successfully added to this pull request: <br /> ${getLabelsListHTML(labelsSet)}`);
+      showToast.success(`These labels were successfully added to this pull request: <br /> ${getLabelsListHTML({ labels: labelsSet })}`);
     }
   } catch (error) {
     throw Error(error);

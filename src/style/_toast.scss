@@ -3,6 +3,10 @@
   max-width: 350px;
   line-height: 1.5;
 
+  a {
+    word-break: break-all;
+  }
+
   ol,
   ul {
     padding-left: 15px;

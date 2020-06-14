@@ -1,6 +1,6 @@
 {
   "name": "github-pr-autolabel",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Set labels to automatically add when opening a GitHub PR.",
   "main": "index.js",
   "scripts": {

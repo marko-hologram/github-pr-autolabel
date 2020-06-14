@@ -18,6 +18,7 @@ const OptionsPage = (): ReactElement => {
   const [errorMessages, setErrorMessages] = useState([]);
   const [entryAdded, setEntryAdded] = useState(false);
   const [userSettings, setUserSettings] = useState<IUserSettings>(null);
+  const [userSettingsUpdateInProgress, setUserSettingsUpdateInProgress] = useState(false);
 
   useEffect(() => {
     const getUserSettings = async () => {
@@ -78,7 +79,10 @@ const OptionsPage = (): ReactElement => {
       return;
     }
 
-    const labelsArray = labelsInput.value.split(",").map((singleLabel: string) => singleLabel.trim());
+    const labelsArray = labelsInput.value
+      .split(",")
+      .map((singleLabel: string) => singleLabel.trim())
+      .filter(Boolean);
     storeSingleEntry({ url: urlInput.value, labels: labelsArray })
       .then(() => {
         setEntryAdded(true);
@@ -92,6 +96,7 @@ const OptionsPage = (): ReactElement => {
   };
 
   const handleUserSettingChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    setUserSettingsUpdateInProgress(true);
     const settingName = event.target.name as keyof IUserSettings;
     const isChecked = event.target.checked;
 
@@ -99,24 +104,28 @@ const OptionsPage = (): ReactElement => {
       const updatedUserSettings = await updateUserSetting({ settingKey: settingName, settingValue: isChecked });
       setUserSettings(updatedUserSettings);
       showToast.success("Successfully updated user settings!");
+      setUserSettingsUpdateInProgress(false);
     } catch (error) {
       const storedUserSettings = await getStoredUserSettings();
       setUserSettings(storedUserSettings);
       showToast.error("Error while updating user settings.");
       console.error(error);
+      setUserSettingsUpdateInProgress(false);
     }
   };
 
+  const disableUserSettingsCheckboxes = !userSettings || userSettingsUpdateInProgress;
+
   return (
     <div className="options">
-      <div className="options__main">
+      <div className="options__main m-b-5">
         <h1>GitHub PR Autolabel Settings</h1>
         <div className="options__settings">
-          <div className="options__settings-user">
+          <div className="options__settings-user m-b-5">
             <h2>Settings</h2>
             <Checkbox
               checked={userSettings?.showLabelsAddSuccessMessage ?? false}
-              disabled={!userSettings}
+              disabled={disableUserSettingsCheckboxes}
               onChange={handleUserSettingChange}
               name="showLabelsAddSuccessMessage"
             >
@@ -125,7 +134,7 @@ const OptionsPage = (): ReactElement => {
           </div>
           <div className="options__add">
             <h2>Add New Entry</h2>
-            <p>You have to refresh your GitHub tabs after adding entries here!</p>
+            <Alert animationType={null}>You have to refresh your open GitHub tabs after adding entries here.</Alert>
             <form className="m-b-2" onSubmit={handleEntrySubmit}>
               <FormGroup>
                 <Input labelText="Repository URL" name="repoUrl" placeholder="https://github.com/marko-hologram/github-pr-autolabel" {...urlInput} />
@@ -145,7 +154,6 @@ const OptionsPage = (): ReactElement => {
                   );
                 })}
             </AnimatePresence>
-
             <AnimatePresence>{entryAdded && <Alert variant="success">Entry successfully added!</Alert>}</AnimatePresence>
           </div>
         </div>

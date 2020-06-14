@@ -1,6 +1,6 @@
 {
-  "name": "GitHub Autolabel",
-  "version": "0.1.0",
+  "name": "GitHub PR Autolabel",
+  "version": "0.3.0",
   "description": "Automatically add a label to a PR before you open it.",
   "permissions": ["activeTab", "declarativeContent", "storage", "tabs", "*://*.github.com/*", "webNavigation", "webRequest"],
   "background": {

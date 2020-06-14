@@ -1,20 +1,6 @@
 import { SAVED_ENTRIES_STORAGE_KEY, SAVED_SETTINGS_STORAGE_KEY, IUserSettings } from "~/src/constants";
 import { showToast } from "~/src/toasts";
 
-export const isValidURL = (urlString: string): boolean => {
-  const pattern = new RegExp(
-    "^(https?:\\/\\/)?" + // protocol
-    "((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|" + // domain name
-    "((\\d{1,3}\\.){3}\\d{1,3}))" + // OR ip (v4) address
-    "(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*" + // port and path
-    "(\\?[;&a-z\\d%_.~+=-]*)?" + // query string
-      "(\\#[-a-z\\d_]*)?$",
-    "i"
-  ); // fragment locator
-
-  return !!pattern.test(urlString);
-};
-
 export type TSingleEntry = {
   url: string;
   labels: string[];
@@ -28,15 +14,71 @@ export const getStoredEntries = (): Promise<TSingleEntry[]> => {
   });
 };
 
-export const storeSingleEntry = async (newEntry: TSingleEntry): Promise<void> => {
+export const storeSingleEntry = async ({ url, labels }: TSingleEntry): Promise<boolean> => {
   const currentItemsSaved = await getStoredEntries();
-  const newArrayOfEntries = [...currentItemsSaved, newEntry];
+  const newArrayOfEntries = [...currentItemsSaved, { url, labels }];
 
-  chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: newArrayOfEntries });
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: newArrayOfEntries }, () => {
+      if (chrome.runtime.lastError) {
+        reject(false);
+      }
+
+      resolve(true);
+    });
+  });
 };
 
-export const getEmphasizedLabels = (labels: string[]): string => {
-  return `<em>${labels.join(", ")}</em>`;
+export const updateStoredEntries = ({ updatedEntries }: { updatedEntries: TSingleEntry[] }): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: updatedEntries }, () => {
+      if (chrome.runtime.lastError) {
+        reject("There was an error while storing your entry. Please try again.");
+      }
+
+      resolve(true);
+    });
+  });
+};
+
+export const updateSingleStoredEntry = async ({ updatedEntryData }: { updatedEntryData: TSingleEntry }): Promise<void> => {
+  const storedEntries = await getStoredEntries();
+  const matchedEntryIndex = storedEntries.findIndex((singleEntry) => singleEntry.url.toLowerCase() === updatedEntryData.url.toLowerCase());
+  storedEntries[matchedEntryIndex].labels = updatedEntryData.labels;
+
+  try {
+    await updateStoredEntries({ updatedEntries: storedEntries });
+  } catch (error) {
+    throw new Error(`There was an error while trying to update entry with ${updatedEntryData.url} URL.`);
+  }
+};
+
+export const deleteStoredEntry = async ({ entryToDelete }: { entryToDelete: TSingleEntry }): Promise<void> => {
+  try {
+    const storedEntries = await getStoredEntries();
+    const newEntries = storedEntries.filter((singleEntry) => singleEntry.url !== entryToDelete.url);
+
+    await updateStoredEntries({ updatedEntries: newEntries });
+  } catch (error) {
+    throw new Error("There was an error while deleting entry from storage.");
+  }
+};
+
+export const getLabelsListHTML = ({ labels }: { labels: string[] }): string => {
+  let labelsListHTML = "<ol>";
+  labelsListHTML += labels.reduce((html, text) => {
+    return html + `<li>${text}</li>`;
+  }, "");
+
+  labelsListHTML += "</ol>";
+  return labelsListHTML;
+};
+
+export const getLabelsFromInput = ({ inputValue }: { inputValue: string }): string[] => {
+  return inputValue
+    .split(",")
+    .map((singleLabel: string) => singleLabel.trim())
+    .filter(Boolean);
 };
 
 export const getStoredUserSettings = (): Promise<IUserSettings> => {
@@ -47,15 +89,16 @@ export const getStoredUserSettings = (): Promise<IUserSettings> => {
   });
 };
 
-export const updateUserSetting = async ({ settingKey, settingValue }: { settingKey: keyof IUserSettings; settingValue: boolean }): Promise<boolean> => {
+export const updateUserSetting = async ({ settingKey, settingValue }: { settingKey: keyof IUserSettings; settingValue: boolean }): Promise<IUserSettings> => {
   const storedUserSettings = await getStoredUserSettings();
+  const settingsToStore = { ...storedUserSettings, [settingKey]: settingValue };
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.set({ [SAVED_SETTINGS_STORAGE_KEY]: { ...storedUserSettings, [settingKey]: settingValue } }, () => {
+    chrome.storage.sync.set({ [SAVED_SETTINGS_STORAGE_KEY]: settingsToStore }, () => {
       if (chrome.runtime.lastError) {
-        reject(false);
+        reject(`There was an error while storing user setting "${settingKey}" to chrome storage.`);
       }
 
-      resolve(true);
+      resolve(settingsToStore);
     });
   });
 };
@@ -74,19 +117,19 @@ export const initUserSettings = async (): Promise<void> => {
 export const setPRLabels = async (labelsToSelect: string[]): Promise<boolean> => {
   const labelsToggle = document.getElementById("labels-select-menu");
 
-  if (!labelsToggle) {
+  if (labelsToggle == null) {
     return false;
   }
 
-  function openAndLoadToggle(): Promise<void> {
+  const openAndLoadToggle = (): Promise<void> => {
     labelsToggle.setAttribute("open", "true");
 
     return new Promise((resolve, reject) => {
-      let intervalId: NodeJS.Timeout = null;
+      let intervalId: number = null;
       let attempts = 0;
 
-      setTimeout(() => {
-        intervalId = setInterval(() => {
+      window.setTimeout(() => {
+        intervalId = window.setInterval(() => {
           const isLoading = labelsToggle.classList.contains("is-loading");
           attempts++;
 
@@ -95,17 +138,17 @@ export const setPRLabels = async (labelsToSelect: string[]): Promise<boolean> =>
             resolve();
           }
 
-          if (attempts > 5) {
+          if (attempts > 20) {
             reject("Failed to add desired label(s).");
           }
         }, 100);
       }, 200);
     });
-  }
+  };
 
-  function closeToggle(): void {
+  const closeToggle = (): void => {
     labelsToggle.removeAttribute("open");
-  }
+  };
 
   try {
     await openAndLoadToggle();
@@ -126,17 +169,28 @@ export const setPRLabels = async (labelsToSelect: string[]): Promise<boolean> =>
 
     closeToggle();
 
+    if (labelsSet.length === 0) {
+      showToast.error(
+        `No labels were set on this pull request because all labels you defined don't exist in this repository. <br /> Labels you were trying to add:${getLabelsListHTML(
+          { labels: labelsToSelect }
+        )}`
+      );
+      return;
+    }
+
     if (labelsSet.length !== labelsToSelect.length) {
       const labelsNotSet = labelsToSelect.filter((singleLabel: string) => !labelsSet.includes(singleLabel));
       showToast.error(
-        `Some labels were not set on this PR because they do not exist in this repo. <br /> Labels not set: "${getEmphasizedLabels(labelsNotSet)}"`
+        `Some labels were not set on this pull request because they do not exist in this repository. <br /> Labels not set: ${getLabelsListHTML({
+          labels: labelsNotSet,
+        })}`
       );
     }
 
     const storedUserSettings = await getStoredUserSettings();
 
     if (storedUserSettings.showLabelsAddSuccessMessage) {
-      showToast.success(`These labels were successfully added: <br /> "${getEmphasizedLabels(labelsSet)}"`);
+      showToast.success(`These labels were successfully added to this pull request: <br /> ${getLabelsListHTML({ labels: labelsSet })}`);
     }
   } catch (error) {
     throw Error(error);

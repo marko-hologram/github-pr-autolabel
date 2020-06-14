@@ -18,7 +18,7 @@ const Input: React.FunctionComponent<InputProps> = ({ labelText, ...otherProps }
 
   return (
     <>
-      <label htmlFor={idRef.current}>{labelText}</label>
+      {labelText && <label htmlFor={idRef.current}>{labelText}</label>}
       <input id={idRef.current} className="form-control" {...otherProps} />
     </>
   );

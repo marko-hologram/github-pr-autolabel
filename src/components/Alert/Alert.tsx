@@ -6,7 +6,7 @@ import { createAnimationDefinition } from "~/src/utility/animation";
 
 interface AlertProps extends IVariant, IAnimationBase {}
 
-const Alert: React.FunctionComponent<AlertProps> = ({ variant, children, animationType = "fadeIn" }) => {
+const Alert: React.FunctionComponent<AlertProps> = ({ variant = "primary", children, animationType = "fadeIn" }) => {
   const classesString = classnames("alert", `alert-${variant}`);
   return (
     <motion.div className={classesString} {...createAnimationDefinition({ animationType })}>

@@ -13,7 +13,7 @@ chrome.runtime.onMessage.addListener(async (request) => {
     } catch (error) {
       showToast.error(
         `There was an error while trying to set labels for this pull request. Please set them manually.<br /> Labels you were trying to set were: ${getLabelsListHTML(
-          entryData.labels
+          { labels: entryData.labels }
         )}`
       );
     }

@@ -14,16 +14,12 @@ export const getStoredEntries = (): Promise<TSingleEntry[]> => {
   });
 };
 
-export const storeSingleEntry = async ({ newEntry }: { newEntry: TSingleEntry }): Promise<void> => {
+export const storeSingleEntry = async ({ url, labels }: TSingleEntry): Promise<boolean> => {
   const currentItemsSaved = await getStoredEntries();
-  const newArrayOfEntries = [...currentItemsSaved, newEntry];
+  const newArrayOfEntries = [...currentItemsSaved, { url, labels }];
 
-  chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: newArrayOfEntries });
-};
-
-export const updateStoredEntries = ({ updatedEntries }: { updatedEntries: TSingleEntry[] }): Promise<boolean> => {
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: updatedEntries }, () => {
+    chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: newArrayOfEntries }, () => {
       if (chrome.runtime.lastError) {
         reject(false);
       }
@@ -33,8 +29,26 @@ export const updateStoredEntries = ({ updatedEntries }: { updatedEntries: TSingl
   });
 };
 
-export const getEmphasizedLabels = (labels: string[]): string => {
-  return `<em>${labels.join(", ")}</em>`;
+export const updateStoredEntries = ({ updatedEntries }: { updatedEntries: TSingleEntry[] }): Promise<boolean> => {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.set({ [SAVED_ENTRIES_STORAGE_KEY]: updatedEntries }, () => {
+      if (chrome.runtime.lastError) {
+        reject("There was an error while storing your entry. Please try again.");
+      }
+
+      resolve(true);
+    });
+  });
+};
+
+export const getLabelsListHTML = (labels: string[]): string => {
+  let labelsListHTML = "<ol>";
+  labelsListHTML += labels.reduce((html, text) => {
+    return html + `<li>${text}</li>`;
+  }, "");
+
+  labelsListHTML += "</ol>";
+  return labelsListHTML;
 };
 
 export const getStoredUserSettings = (): Promise<IUserSettings> => {
@@ -45,15 +59,16 @@ export const getStoredUserSettings = (): Promise<IUserSettings> => {
   });
 };
 
-export const updateUserSetting = async ({ settingKey, settingValue }: { settingKey: keyof IUserSettings; settingValue: boolean }): Promise<boolean> => {
+export const updateUserSetting = async ({ settingKey, settingValue }: { settingKey: keyof IUserSettings; settingValue: boolean }): Promise<IUserSettings> => {
   const storedUserSettings = await getStoredUserSettings();
+  const settingsToStore = { ...storedUserSettings, [settingKey]: settingValue };
   return new Promise((resolve, reject) => {
-    chrome.storage.sync.set({ [SAVED_SETTINGS_STORAGE_KEY]: { ...storedUserSettings, [settingKey]: settingValue } }, () => {
+    chrome.storage.sync.set({ [SAVED_SETTINGS_STORAGE_KEY]: settingsToStore }, () => {
       if (chrome.runtime.lastError) {
-        reject(false);
+        reject(`There was an error while storing user setting "${settingKey}" to chrome storage.`);
       }
 
-      resolve(true);
+      resolve(settingsToStore);
     });
   });
 };
@@ -124,17 +139,26 @@ export const setPRLabels = async (labelsToSelect: string[]): Promise<boolean> =>
 
     closeToggle();
 
+    if (labelsSet.length === 0) {
+      showToast.error(
+        `No labels were set on this pull request because all labels you defined don't exist in this repository. <br /> Labels you were trying to add:${getLabelsListHTML(
+          labelsToSelect
+        )}`
+      );
+      return;
+    }
+
     if (labelsSet.length !== labelsToSelect.length) {
       const labelsNotSet = labelsToSelect.filter((singleLabel: string) => !labelsSet.includes(singleLabel));
       showToast.error(
-        `Some labels were not set on this PR because they do not exist in this repo. <br /> Labels not set: "${getEmphasizedLabels(labelsNotSet)}"`
+        `Some labels were not set on this pull request because they do not exist in this repository. <br /> Labels not set: ${getLabelsListHTML(labelsNotSet)}`
       );
     }
 
     const storedUserSettings = await getStoredUserSettings();
 
     if (storedUserSettings.showLabelsAddSuccessMessage) {
-      showToast.success(`These labels were successfully added: <br /> "${getEmphasizedLabels(labelsSet)}"`);
+      showToast.success(`These labels were successfully added to this pull request: <br /> ${getLabelsListHTML(labelsSet)}`);
     }
   } catch (error) {
     throw Error(error);

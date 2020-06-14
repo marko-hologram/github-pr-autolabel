@@ -1,13 +1,18 @@
 import React from "react";
 import classnames from "classnames";
+import { motion } from "framer-motion";
+import { IVariant, IAnimationBase } from "~/src/utility/interfaces";
+import { createAnimationDefinition } from "~/src/utility/animation";
 
-interface AlertProps {
-  variant: "primary" | "secondary" | "danger" | "success";
-}
+interface AlertProps extends IVariant, IAnimationBase {}
 
-const Alert: React.FunctionComponent<AlertProps> = ({ variant, children }) => {
+const Alert: React.FunctionComponent<AlertProps> = ({ variant, children, animationType = "fadeIn" }) => {
   const classesString = classnames("alert", `alert-${variant}`);
-  return <div className={classesString}>{children}</div>;
+  return (
+    <motion.div className={classesString} {...createAnimationDefinition({ animationType })}>
+      {children}
+    </motion.div>
+  );
 };
 
 export default Alert;

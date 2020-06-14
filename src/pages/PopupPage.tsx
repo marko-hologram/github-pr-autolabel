@@ -1,6 +1,6 @@
-import React from "react";
-import Button from "~/src/components/Button";
+import React, { ReactElement } from "react";
 import useStoredEntries from "~/src/utility/hooks/useStoredEntries";
+import { Button } from "~/src/components/Button";
 
 interface getPopupMainMessage {
   numberOfStoredEntries: number;
@@ -12,7 +12,7 @@ const getPopupMainMessage = ({ numberOfStoredEntries }: getPopupMainMessage) => 
     : `You have ${numberOfStoredEntries} ${numberOfStoredEntries > 1 ? "entries" : "entry"} stored`;
 };
 
-const PopupPage: React.FunctionComponent<Record<string, unknown>> = () => {
+const PopupPage = (): ReactElement => {
   const storedEntries = useStoredEntries();
 
   const openOptionsPage = () => {

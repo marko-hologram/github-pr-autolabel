@@ -4,6 +4,7 @@ import { TSingleEntry, getStoredEntries, updateStoredEntries } from "~/src/utili
 import Button from "~/src/components/Button/Button";
 import Input from "~/src/components/Form/Input";
 import useFormInput from "~/src/utility/hooks/useFormInput";
+import { createAnimationDefinition } from "~/src/utility/animation";
 
 interface SavedEntriesListSingleProps {
   entryData: TSingleEntry;
@@ -13,38 +14,9 @@ interface SavedEntriesListProps {
   savedEntries: TSingleEntry[];
 }
 
-const savedEntriesListSingleVariants = {
-  hidden: {
-    opacity: 0,
-    height: 0,
-    overflow: "hidden",
-    transition: {
-      duration: 0.3,
-      staggerChildren: 2,
-    },
-  },
-  visible: {
-    opacity: 1,
-    height: "auto",
-    overflow: "hidden",
-    transition: {
-      duration: 0.3,
-      staggerChildren: 2,
-    },
-  },
-  exit: {
-    opacity: 0,
-    height: 0,
-    overflow: "hidden",
-    transition: {
-      duration: 0.3,
-    },
-  },
-};
-
 const SavedEntriesListSingle: React.FunctionComponent<SavedEntriesListSingleProps> = ({ entryData }) => {
   const [editModeOn, setEditModeOn] = useState(false);
-  const labelsInput = useFormInput(entryData.labels.join(", ").toString());
+  const [labelsInput] = useFormInput(entryData.labels.join(", ").toString());
 
   const toggleEditMode = () => {
     setEditModeOn((currentState) => !currentState);
@@ -62,7 +34,7 @@ const SavedEntriesListSingle: React.FunctionComponent<SavedEntriesListSingleProp
   };
 
   return (
-    <motion.div className="saved-entries__item" variants={savedEntriesListSingleVariants} initial="hidden" animate="visible" exit="exit">
+    <motion.div className="saved-entries__item" {...createAnimationDefinition({ animationType: "heightIn" })}>
       <a className="saved-entries__url" href={entryData.url} target="_blank" rel="noreferrer">
         {entryData.url}
       </a>
@@ -83,11 +55,7 @@ const SavedEntriesListSingle: React.FunctionComponent<SavedEntriesListSingleProp
 
 const SavedEntriesList: React.FunctionComponent<SavedEntriesListProps> = ({ savedEntries }) => {
   if (savedEntries.length === 0) {
-    return (
-      <motion.p variants={savedEntriesListSingleVariants} initial="hidden" animate="visible">
-        There are no entries saved yet.
-      </motion.p>
-    );
+    return <motion.p {...createAnimationDefinition({ animationType: "heightIn" })}>There are no entries saved yet.</motion.p>;
   }
 
   return (

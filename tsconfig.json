@@ -1,15 +1,23 @@
 {
   "compilerOptions": {
+    "target": "es6",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": false,
+    "jsx": "react",
     "outDir": "./dist/",
-    "noImplicitAny": true,
-    "module": "ES2020",
-    "target": "es5",
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]
-    },
-    "allowJs": true,
-    "moduleResolution": "node"
+    }
   },
-  "include": ["./src/**/*"]
+  "include": ["./src"]
 }

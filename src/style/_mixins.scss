@@ -1,0 +1,31 @@
+$spacing-base-value: 8px;
+
+@mixin make-padding-spacing-utilities($spacing-name, $spacing-multiplier) {
+  .p-#{$spacing-name} {
+    padding-top: $spacing-base-value * $spacing-multiplier !important;
+    padding-bottom: $spacing-base-value * $spacing-multiplier !important;
+  }
+
+  .p-t-#{$spacing-name} {
+    padding-top: $spacing-base-value * $spacing-multiplier !important;
+  }
+
+  .p-b-#{$spacing-name} {
+    padding-bottom: $spacing-base-value * $spacing-multiplier !important;
+  }
+}
+
+@mixin make-margin-spacing-utilities($spacing-name, $spacing-multiplier) {
+  .m-#{$spacing-name} {
+    margin-top: $spacing-base-value * $spacing-multiplier !important;
+    margin-bottom: $spacing-base-value * $spacing-multiplier !important;
+  }
+
+  .m-t-#{$spacing-name} {
+    margin-top: $spacing-base-value * $spacing-multiplier !important;
+  }
+
+  .m-b-#{$spacing-name} {
+    margin-bottom: $spacing-base-value * $spacing-multiplier !important;
+  }
+}

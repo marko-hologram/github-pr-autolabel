@@ -1,8 +1,8 @@
 import { ACTIVE_DOMAIN, MessageType } from "~/src/constants";
 import { TSingleEntry, getStoredEntries, initUserSettings } from "~/src/utility";
 
-chrome.runtime.onInstalled.addListener(async function () {
-  chrome.declarativeContent.onPageChanged.removeRules(undefined, function () {
+chrome.runtime.onInstalled.addListener(async () => {
+  chrome.declarativeContent.onPageChanged.removeRules(undefined, () => {
     chrome.declarativeContent.onPageChanged.addRules([
       {
         conditions: [
@@ -16,7 +16,7 @@ chrome.runtime.onInstalled.addListener(async function () {
   });
 });
 
-chrome.tabs.onUpdated.addListener(async function (tabId, changeInfo, tab) {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") {
     const storedEntries = await getStoredEntries();
     const matchedEntry = storedEntries.find((singleEntry: TSingleEntry) => tab.url.includes(singleEntry.url.replace(/\/+$/, "") + "/compare/"));

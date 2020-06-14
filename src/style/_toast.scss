@@ -2,6 +2,11 @@
   padding-right: 45px;
   max-width: 350px;
   line-height: 1.5;
+
+  ol,
+  ul {
+    padding-left: 15px;
+  }
 }
 
 .toast-close {

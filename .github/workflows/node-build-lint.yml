@@ -25,4 +25,4 @@ jobs:
     - name: Install NPM modules
       run: yarn install --frozen-lockfile
     - name: ESLint
-      run: npm run eslint:github-actions
+      run: npm run lint:src

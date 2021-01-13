@@ -1,0 +1,41 @@
+{
+  "name": "GitHub PR Autolabel",
+  "version": "0.4.0",
+  "description": "Automatically add a label to a PR before you open it.",
+  "permissions": ["activeTab", "storage", "tabs", "*://*.github.com/*"],
+  "background": {
+    "scripts": ["background.js"],
+    "persistent": true
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "page_action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "assets/icon/labels-icon-16.png",
+      "32": "assets/icon/labels-icon-32.png",
+      "48": "assets/icon/labels-icon-48.png",
+      "128": "assets/icon/labels-icon-128.png"
+    }
+  },
+  "icons": {
+    "16": "assets/icon/labels-icon-16.png",
+    "32": "assets/icon/labels-icon-32.png",
+    "48": "assets/icon/labels-icon-48.png",
+    "128": "assets/icon/labels-icon-128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://github.com/*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "manifest_version": 2,
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "{6a18e3cd-2148-4beb-80ad-1c50446a4a4a}"
+    }
+  }
+}

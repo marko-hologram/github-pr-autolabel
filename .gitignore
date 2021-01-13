@@ -12,6 +12,8 @@
 
 # production
 /dist
+/dist-chromium
+/dist-firefox
 /build
 
 # misc

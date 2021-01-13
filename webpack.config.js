@@ -62,9 +62,9 @@ module.exports = {
   plugins: [
     new CopyPlugin({
       patterns: [
-        { from: absPath(`./src/manifest-${browserType}.json`), to: DIST_PATH + '/manifest.json' },
+        { from: absPath(`./src/manifest-${browserType}.json`), to: DIST_PATH + "/manifest.json" },
         { from: absPath("./src/html"), to: DIST_PATH },
-        { from: absPath("./src/assets/icon"), to: DIST_PATH + "/assets/icon" },
+        { from: absPath("./src/assets/icon"), to: DIST_PATH + "/data/images" },
       ],
     }),
   ],

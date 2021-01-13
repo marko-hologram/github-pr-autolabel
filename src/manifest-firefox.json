@@ -14,17 +14,17 @@
   "page_action": {
     "default_popup": "popup.html",
     "default_icon": {
-      "16": "assets/icon/labels-icon-16.png",
-      "32": "assets/icon/labels-icon-32.png",
-      "48": "assets/icon/labels-icon-48.png",
-      "128": "assets/icon/labels-icon-128.png"
+      "16": "data/images/labels-icon-16.png",
+      "32": "data/images/labels-icon-32.png",
+      "48": "data/images/labels-icon-48.png",
+      "128": "data/images/labels-icon-128.png"
     }
   },
   "icons": {
-    "16": "assets/icon/labels-icon-16.png",
-    "32": "assets/icon/labels-icon-32.png",
-    "48": "assets/icon/labels-icon-48.png",
-    "128": "assets/icon/labels-icon-128.png"
+    "16": "data/images/labels-icon-16.png",
+    "32": "data/images/labels-icon-32.png",
+    "48": "data/images/labels-icon-48.png",
+    "128": "data/images/labels-icon-128.png"
   },
   "content_scripts": [
     {
